@@ -1,8 +1,11 @@
 extends layout
 
 block content
-  h1= title
-    div(ng-controller='desuSyncCtrl')
-      .dropbox(desu-files)
-      ul
-        li(ng-repeat='file in files') {{ file.name }}
+    h1= title
+    div.row(ng-controller='desuSyncCtrl')
+        .col-xs-6
+            .dropbox(desu-files)
+                .text Drag and drop files here!
+        .col-xs-6
+            pre(ng-repeat='file in files') {{ file | json }}
+            button.btn.btn-default(ng-click='files = []') Clear files

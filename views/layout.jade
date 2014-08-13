@@ -15,7 +15,6 @@ html
     if css
       for sheet in css
         +css('/stylesheets/'+sheet+'.css')
-        link(rel='stylesheet', href='/stylesheets/'+sheet+'.css')
   body
     .container(ng-app=(ngApp ? ngApp : undefined))
       block content

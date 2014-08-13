@@ -1,5 +1,6 @@
 .dropbox {
   border: 10px dashed #ccc;
+  height: 500px;
   margin: 20px;
   padding: 20px;
   display: block;
@@ -8,4 +9,7 @@
 }
 .dropbox.hover {
   border: 10px dashed #333;
+}
+.dropbox .text {
+  margin-top: 40%;
 }

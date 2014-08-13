@@ -1,3 +1,9 @@
+/* TODO
+    select/remove entries
+    alert bad if folder (or maybe finish series?)
+
+*/
+
 (function($, angular) {
 
   // Angular
@@ -11,12 +17,11 @@
 
   .directive('desuFiles', function() {
     return {
-      template: 'Drag and drop files here!',
-      link: function($scope, elem) {
-        elem.bind('drop', function(e) {
-          console.log(e);
-          $scope.$apply(function() {
-            $scope.files = e.originalEvent.dataTransfer.files;
+      link: function(scope, elem, attrs, ctrl) {
+        elem.on('drop', function(e) {
+          scope.$apply(function() {
+            // Append new files to model
+            Array.prototype.push.apply(scope.files, e.originalEvent.dataTransfer.files);
           });
         });
       }
