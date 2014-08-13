@@ -1,0 +1,31 @@
+mixin css(sheet)
+  link(rel='stylesheet', href=sheet)
+
+mixin js(script)
+  script(src=script)
+
+doctype html
+html
+  head
+    title=title
+    // Global stylesheets
+    +css('//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css')
+    +css('/stylesheets/global.css')
+    // Page stylesheets
+    if css
+      for sheet in css
+        +css('/stylesheets/'+sheet+'.css')
+        link(rel='stylesheet', href='/stylesheets/'+sheet+'.css')
+  body
+    .container(ng-app=(ngApp ? ngApp : undefined))
+      block content
+    // Global scripts
+    +js('//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js')
+    +js('//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js')
+    +js('//ajax.googleapis.com/ajax/libs/angularjs/1.2.22/angular.min.js')
+    +js('//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.20/angular-resource.min.js')
+    +js('//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js')
+    // Page scripts
+    if js
+      for script in js
+        +js('/js/'+js+'.js')

@@ -1,0 +1,11 @@
+.dropbox {
+  border: 10px dashed #ccc;
+  margin: 20px;
+  padding: 20px;
+  display: block;
+  text-align: center;
+  font-size: 2rem;
+}
+.dropbox.hover {
+  border: 10px dashed #333;
+}
