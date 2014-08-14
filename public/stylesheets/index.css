@@ -1,4 +1,4 @@
-.dropbox {
+desu-box {
   border: 10px dashed #ccc;
   height: 500px;
   margin: 20px;
@@ -7,9 +7,9 @@
   text-align: center;
   font-size: 2rem;
 }
-.dropbox.hover {
+desu-box.hover {
   border: 10px dashed #333;
 }
-.dropbox .text {
+desu-box .text {
   margin-top: 40%;
 }

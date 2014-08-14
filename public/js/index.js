@@ -5,6 +5,7 @@
 */
 
 (function($, angular) {
+  'use strict';
 
   // Angular
 
@@ -12,35 +13,42 @@
 
   .controller('desuSyncCtrl', ['$scope',// 'Hummingbird', 'MAL',
   function($scope) {
-    $scope.files = [];
+    $scope.entries = [];
+
+    $scope.updateFiles = function(files) {
+      for(var i = 0, file; file = files[i]; i++) {
+        var name = file.name;
+        console.log(file.type); // TODO REMOVE
+        var checked = !(file.type && file.type.indexOf('video'));
+
+        $scope.entries.push({name: name, checked: checked});
+      }
+    };
+
+    $scope.$watch('entries', function(entries) {
+
+    })
   }])
 
-  .directive('desuFiles', function() {
+  .directive('desuBox', function() {
     return {
-      link: function(scope, elem, attrs, ctrl) {
-        elem.on('drop', function(e) {
-          scope.$apply(function() {
-            // Append new files to model
-            Array.prototype.push.apply(scope.files, e.originalEvent.dataTransfer.files);
-          });
+      restrict: 'E',
+      scope: {
+        callback: '&onDrop'
+      },
+      link: function(scope, elem, attrs) {
+        elem.on('dragover dragleave dragend drop', function(e) {
+          e.stopPropagation();
+          e.preventDefault();
+          $(e.target)[e.type == 'dragover' ? 'addClass' : 'removeClass']('hover');
+          return false;
+        }).
+        on('drop', function(e) {
+          scope.callback( {files: e.originalEvent.dataTransfer.files });
+          scope.$apply();
         });
       }
     };
   });
 
-  // Handle frontend aspects
-  function prepareDropbox() {
-    $dropbox = $('.dropbox');
-
-    $dropbox.on('dragover dragleave dragend drop', function(e) {
-      e.stopPropagation();
-      e.preventDefault();
-      $(e.target)[e.type == 'dragover' ? 'addClass' : 'removeClass']('hover');
-      return false;
-    });
-  }
-
-  $(function() {
-    prepareDropbox();
-  });
 })(window.jQuery, window.angular);

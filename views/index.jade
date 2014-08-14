@@ -1,11 +1,16 @@
 extends layout
 
 block content
-    h1= title
-    div.row(ng-controller='desuSyncCtrl')
-        .col-xs-6
-            .dropbox(desu-files)
-                .text Drag and drop files here!
-        .col-xs-6
-            pre(ng-repeat='file in files') {{ file | json }}
-            button.btn.btn-default(ng-click='files = []') Clear files
+  h1= title
+  div.row(ng-controller='desuSyncCtrl')
+    .col-xs-6
+      desu-box(on-drop='updateFiles(files)')
+        .text Drag and drop files here!
+    .col-xs-6
+      ul
+        li(ng-repeat='entry in entries')
+          .checkbox
+            label
+              input(type='checkbox' ng-model='entry.checked')
+              {{ entry.name }}
+      button.btn.btn-danger(ng-show='entries.length' ng-click='entries = []') Clear entries
