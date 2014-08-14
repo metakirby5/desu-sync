@@ -3,7 +3,8 @@
 
   angular.module('desuSyncApp', [])
 
-  .controller('desuSyncCtrl', ['$scope',// 'Hummingbird', 'MAL',
+  // Filenames and stuff
+  .controller('entriesCtrl', ['$scope',// 'Hummingbird', 'MAL',
   function($scope) {
     $scope.entries = [];
     $scope.selectAll = false;
@@ -11,16 +12,17 @@
     $scope.manualName = '';
     $scope.manualEp = '';
 
-    // Manual text fields
-    $scope.manualAdd = function() {
+    $scope.add = function(name, ep, checked) {
       $scope.entries.push({
-        name: $scope.manualName,
-        ep: $scope.manualEp,
-        checked: true
+        name: name,
+        ep: ep ? ep : 1,
+        checked: checked
       });
-      $scope.manualName = '';
-      $scope.manualEp = '';
     }
+
+    $scope.remove = function(entry) {
+      $scope.entries.splice($scope.entries.indexOf(entry), 1);
+    };
 
     $scope.count = function() {
       var count = 0;
@@ -33,16 +35,16 @@
 
     $scope.addFiles = function(files) {
       angular.forEach(files, function(file) {
-        this.push({
-          name: file.name,
-          checked: !(file.type && file.type.indexOf('video'))
-        });
+        $scope.add(file.name, 1, !(file.type && file.type.indexOf('video')));
       }, $scope.entries);
     };
 
-    $scope.remove = function(entry) {
-      $scope.entries.splice($scope.entries.indexOf(entry), 1);
-    };
+    // Manual text fields
+    $scope.manualAdd = function() {
+      $scope.add($scope.manualName, $scope.manualEp, true);
+      $scope.manualName = '';
+      $scope.manualEp = '';
+    }
 
     // Remove checked or unchecked
     $scope.removeCheck = function(checked) {
@@ -62,10 +64,29 @@
       })
     });
 
-  }])
+  }]).
+
+  // Login credentials
+  controller('credsCtrl', ['$scope',
+  function($scope) {
+    $scope.showCreds = true;
+    $scope.hum = {
+      email: '',
+      user: '',
+      pass: ''
+    };
+    $scope.mal = {
+      user: '',
+      pass: ''
+    };
+
+    $scope.toggleCreds = function() {
+      $scope.showCreds = !$scope.showCreds;
+    };
+  }]).
 
   // Drag and drop box
-  .directive('desuBox', function() {
+  directive('desuBox', function() {
     return {
       restrict: 'E',
       transclude: true,
@@ -86,10 +107,10 @@
         });
       }
     };
-  })
+  }).
 
   // File select
-  .directive('desuSelect', function() {
+  directive('desuSelect', function() {
     return {
       restrict: 'E',
       template: '<input type="file" multiple>',

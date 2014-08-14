@@ -2,7 +2,32 @@ extends layout
 
 block content
   h1= title
-  div.row(ng-controller='desuSyncCtrl')
+  div.row(ng-controller='credsCtrl')
+    .col-xs-12
+      h3 Credentials 
+        a.reveal(ng-click='toggleCreds()') {{showCreds ? '-' : '+'}}
+    .col-xs-6.ng-cloak(ng-show='showCreds')
+      form.form-horizontal(role='form')
+        h4 Hummingbird {{hum.email}} {{hum.user}} {{hum.pass}}
+        .form-group.form-group-sm
+          .col-xs-12
+            .input-group
+              .input-group-addon @
+              input.form-control(type='email' placeholder='Email' ng-model='hum.email')
+        .form-group.form-group-sm
+          .col-xs-6
+            input.form-control(type='text' placeholder='Username' ng-model='hum.user')
+          .col-xs-6
+            input.form-control(type='password' placeholder='Password' ng-model='hum.pass')
+    .col-xs-6.ng-cloak(ng-show='showCreds')
+      form.form-horizontal(role='form')
+        h4 MAL {{mal.email}} {{mal.user}} {{mal.pass}}
+        .form-group.form-group-sm
+          .col-xs-6
+            input.form-control(type='text' placeholder='Username' ng-model='mal.user')
+          .col-xs-6
+            input.form-control(type='password' placeholder='Password' ng-model='mal.pass')
+  div.row(ng-controller='entriesCtrl')
     .col-xs-6
       desu-box(on-drop='addFiles(files)') Drag and drop
       .form-group
@@ -10,22 +35,22 @@ block content
         desu-select(on-select='addFiles(files)')
       .form-group
         label Manual entry
-        form(ng-submit='manualAdd()')
+        form(role='form' ng-submit='manualAdd()')
           .row
             .col-xs-7
-              input.form-control(type='text' placeholder='Anime name' ng-model='manualName')
+              input.form-control(type='text' required placeholder='Anime name' ng-model='manualName')
             .col-xs-3
-              input.form-control(type='number' placeholder='Episode' ng-model='manualEp')
+              input.form-control(type='number' min='0' placeholder='Episode' ng-model='manualEp')
             .col-xs-2
               button.btn.btn-primary(type='submit') Add
 
     .col-xs-6.ng-cloak
-      ul
+      ul.unstyled
         li(ng-repeat='entry in entries')
           .checkbox
             label
               input(type='checkbox' ng-model='entry.checked')
-              | {{ entry.name }}
+              | {{ entry.name }} / {{ entry.ep }}
       .controls(ng-show='entries.length')
         .checkbox
           label
