@@ -18,28 +18,23 @@ block content
             .col-xs-3
               input.form-control(type='number' placeholder='Episode' ng-model='manualEp')
             .col-xs-2
-              button.btn.btn-primary(type='submit') Submit
+              button.btn.btn-primary(type='submit') Add
 
-    .col-xs-6
+    .col-xs-6.ng-cloak
       ul
         li(ng-repeat='entry in entries')
           .checkbox
             label
               input(type='checkbox' ng-model='entry.checked')
-              button.btn.btn-danger(ng-click='remove(entry)') Remove
               | {{ entry.name }}
       .controls(ng-show='entries.length')
+        .checkbox
+          label
+            input(type='checkbox' ng-model='selectAll')
+            | Select All
         .row
           .col-xs-6
-            | {{ count() }}/{{ entries.length }} selected
-          .col-xs-6
-            label
-              input(type='checkbox' ng-model='selectAll')
-              | Select All
-        .row
-          .col-xs-4
-            button.btn.btn-md.btn-block.btn-primary(onclick='alert("We\'re not done!")') Update lists!
-          .col-xs-4
-            button.btn.btn-md.btn-block.btn-warning(ng-click='removeCheck(false)') Remove deselected
-          .col-xs-4
-            button.btn.btn-md.btn-block.btn-danger(ng-click='removeAll()') Clear entries
+            button.btn.btn-md.btn-block.btn-primary(onclick='alert("We\'re not done!")')
+              | Update {{ count() }}/{{ entries.length }}
+          .col-lg-6
+            button.btn.btn-md.btn-block.btn-danger(ng-click='removeAll()') Clear all

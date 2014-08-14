@@ -1,9 +1,3 @@
-/* TODO
-    select/remove entries
-    alert bad if folder (or maybe finish series?)
-
-*/
-
 (function($, angular) {
   'use strict';
 
