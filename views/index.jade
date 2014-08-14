@@ -4,8 +4,7 @@ block content
   h1= title
   div.row(ng-controller='desuSyncCtrl')
     .col-xs-6
-      desu-box(on-drop='addFiles(files)')
-        label Drag and drop
+      desu-box(on-drop='addFiles(files)') Drag and drop
       .form-group
         label Classic upload
         desu-select(on-select='addFiles(files)')

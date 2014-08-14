@@ -1,4 +1,4 @@
-(function($, angular) {
+(function($, angular, require) {
   'use strict';
 
   angular.module('desuSyncApp', [])
@@ -68,6 +68,8 @@
   .directive('desuBox', function() {
     return {
       restrict: 'E',
+      transclude: true,
+      template: '<label ng-transclude></label>',
       scope: {
         callback: '&onDrop'
       },
@@ -105,4 +107,10 @@
     }
   });
 
-})(window.jQuery, window.angular);
+  $(function() {
+    // Remove drag and drop if not supported
+    if (!(window.File || window.FileList))
+      $('desu-box').remove();
+  });
+
+})(window.jQuery, window.angular, window.require);
