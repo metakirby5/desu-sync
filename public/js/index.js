@@ -1,11 +1,35 @@
-(function($, angular, require) {
+(function($, _, angular, require) {
   'use strict';
 
-  angular.module('desuSyncApp', [])
+  angular.module('desuSyncApp', []).
+
+  // Sharing is caring
+  factory('pub', function() {
+    return {obj: {}};
+  }).
+
+  // Tabs
+  controller('tabsCtrl', ['$scope', 'pub',
+  function($scope, pub) {
+    $scope.pub = pub.obj;
+
+    $scope.tabs = ['Credentials', 'Select Episodes'];
+    $scope.curTab = $scope.tabs[0];
+
+    $scope.setTab = function(tab) {
+      if ($scope.curTab === 'Credentials' && !$scope.pub.credsValid())
+        return;
+
+      $scope.curTab = tab;
+    };
+    $scope.pub.getTab = function() {return $scope.curTab;}
+  }]).
 
   // Filenames and stuff
-  .controller('entriesCtrl', ['$scope',// 'Hummingbird', 'MAL',
-  function($scope) {
+  controller('entriesCtrl', ['$scope', 'pub',// 'Hummingbird', 'MAL',
+  function($scope, pub) {
+    $scope.pub = pub.obj;
+
     $scope.entries = [];
     $scope.selectAll = false;
 
@@ -67,21 +91,43 @@
   }]).
 
   // Login credentials
-  controller('credsCtrl', ['$scope',
-  function($scope) {
-    $scope.showCreds = true;
-    $scope.hum = {
-      email: '',
+  controller('credsCtrl', ['$scope', 'pub',
+  function($scope, pub) {
+    $scope.pub = pub.obj;
+
+    $scope.hb = {
       user: '',
       pass: ''
-    };
+    }
     $scope.mal = {
       user: '',
       pass: ''
-    };
+    }
 
-    $scope.toggleCreds = function() {
-      $scope.showCreds = !$scope.showCreds;
+    $scope.pub.getHb = function() {return $scope.hb;};
+    $scope.pub.getMal = function() {return $scope.mal;};
+    $scope.pub.credFilled = function(form) {
+      var size = 0;
+      var filled = 0;
+      for (var key in form) {
+        size++;
+        filled += form[key] ? 1 : 0;
+      }
+      return size ? filled === size : false;
+    };
+    $scope.isValid = function(form) {
+      var size = 0;
+      var filled = 0;
+      for (var key in form) {
+        size++;
+        filled += form[key] ? 1 : 0;
+      }
+      return size ? !(0 < filled && filled < size) : false;
+    };
+    $scope.pub.credsValid = function() {
+      // Both valid, at least one filled
+      return ($scope.isValid($scope.hb) && $scope.isValid($scope.mal)) &&
+             ($scope.pub.credFilled($scope.hb) || $scope.pub.credFilled($scope.mal));
     };
   }]).
 
@@ -134,4 +180,4 @@
       $('desu-box').remove();
   });
 
-})(window.jQuery, window.angular, window.require);
+})(window.jQuery, window._, window.angular, window.require);

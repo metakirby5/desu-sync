@@ -2,63 +2,68 @@ extends layout
 
 block content
   h1= title
-  div.row(ng-controller='credsCtrl')
-    .col-xs-12
-      h3 Credentials 
-        a.reveal(ng-click='toggleCreds()') {{showCreds ? '-' : '+'}}
-    .col-xs-6.ng-cloak(ng-show='showCreds')
-      form.form-horizontal(role='form')
-        h4 Hummingbird {{hum.email}} {{hum.user}} {{hum.pass}}
-        .form-group.form-group-sm
-          .col-xs-12
-            .input-group
-              .input-group-addon @
-              input.form-control(type='email' placeholder='Email' ng-model='hum.email')
-        .form-group.form-group-sm
-          .col-xs-6
-            input.form-control(type='text' placeholder='Username' ng-model='hum.user')
-          .col-xs-6
-            input.form-control(type='password' placeholder='Password' ng-model='hum.pass')
-    .col-xs-6.ng-cloak(ng-show='showCreds')
-      form.form-horizontal(role='form')
-        h4 MAL {{mal.email}} {{mal.user}} {{mal.pass}}
-        .form-group.form-group-sm
-          .col-xs-6
-            input.form-control(type='text' placeholder='Username' ng-model='mal.user')
-          .col-xs-6
-            input.form-control(type='password' placeholder='Password' ng-model='mal.pass')
-  div.row(ng-controller='entriesCtrl')
-    .col-xs-6
-      desu-box(on-drop='addFiles(files)') Drag and drop
-      .form-group
-        label Classic upload
-        desu-select(on-select='addFiles(files)')
-      .form-group
-        label Manual entry
-        form(role='form' ng-submit='manualAdd()')
-          .row
-            .col-xs-7
-              input.form-control(type='text' required placeholder='Anime name' ng-model='manualName')
-            .col-xs-3
-              input.form-control(type='number' min='0' placeholder='Episode' ng-model='manualEp')
-            .col-xs-2
-              button.btn.btn-primary(type='submit') Add
 
-    .col-xs-6.ng-cloak
-      ul.list-unstyled
-        li(ng-repeat='entry in entries')
-          .checkbox
-            label
-              input(type='checkbox' ng-model='entry.checked')
-              | {{ entry.name }} / {{ entry.ep }}
-      .controls(ng-show='entries.length')
+  div(ng-controller='tabsCtrl')
+    ul.nav.nav-pills
+      li(ng-repeat='tab in tabs' ng-class='{active: curTab === tab }' ng-click='setTab(tab)')
+        a {{ tab }}
+
+  div(ng-controller='credsCtrl' ng-show='pub.getTab() === "Credentials"' ng-cloak)
+      form.form-horizontal(role='form')
+        h3 Hummingbird.me 
+        .form-group.form-group-lg(ng-class='{"has-error": !isValid(hb)}')
+          .col-xs-12.col-md-6
+            input.form-control(type='text' placeholder='Username' ng-model='hb.user')
+          .col-xs-12.col-md-6
+            input.form-control(type='password' placeholder='Password' ng-model='hb.pass')
+      .text-center: h2 AND/OR
+      form.form-horizontal(role='form')
+        h3 MyAnimeList
+        .form-group.form-group-lg(ng-class='{"has-error": !isValid(mal)}')
+          .col-xs-12.col-md-6
+            input.form-control(type='text' placeholder='Username' ng-model='mal.user')
+          .col-xs-12.col-md-6
+            input.form-control(type='password' placeholder='Password' ng-model='mal.pass')
+
+
+  div(ng-controller='entriesCtrl' ng-show='pub.getTab() === "Select Episodes"' ng-cloak)
+    .row
+      .col-xs-12.col-md-6
+        desu-box(on-drop='addFiles(files)') Drag and drop
+      .col-xs-12.col-md-6
+        .form-group
+          label Classic upload
+          desu-select(on-select='addFiles(files)')
+        .form-group
+          label Manual entry
+          form(role='form' ng-submit='manualAdd()')
+            .row
+              .col-xs-12.col-md-7
+                input.form-control(type='text' required placeholder='Anime name' ng-model='manualName')
+              .col-xs-6.col-md-3
+                input.form-control(type='number' min='0' placeholder='Episode' ng-model='manualEp')
+              .col-xs-6.col-md-2
+                button.btn.btn-primary.btn-block(type='submit') Add
+
+    ul.list-unstyled
+      li(ng-repeat='entry in entries')
         .checkbox
           label
-            input(type='checkbox' ng-model='selectAll')
-            | Select All
-        .row
-          .col-xs-6
-            button.btn.btn-md.btn-block.btn-primary(onclick='alert("We\'re not done!")')
-              | Update {{ count() }}/{{ entries.length }}
-          .col-lg-6
-            button.btn.btn-md.btn-block.btn-danger(ng-click='removeAll()') Clear all
+            input(type='checkbox' ng-model='entry.checked')
+            | {{ entry.name }} / {{ entry.ep }}
+    .controls (ng-show='entries.length')
+      .checkbox
+        label
+          input(type='checkbox' ng-model='selectAll')
+          | Select All
+      .btn-group.btn-group-justified.btn-group-lg
+        .btn-group.btn-group-lg
+          a.btn.btn-primary.dropdown-toggle(data-toggle='dropdown')
+            | Update {{ count() }}/{{ entries.length }} 
+            span.caret
+          ul.dropdown-menu(role='menu')
+            li(ng-show='pub.credFilled(pub.getHb()) && pub.credFilled(pub.getMal())'): a All
+            li(ng-show='pub.credFilled(pub.getHb())'): a Hummingbird.me
+            li(ng-show='pub.credFilled(pub.getMal())'): a MyAnimeList
+        a.btn.btn-danger(ng-click='removeAll()') Clear all
+
