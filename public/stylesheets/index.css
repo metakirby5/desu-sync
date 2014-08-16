@@ -1,6 +1,9 @@
 a {
   cursor: pointer;
 }
+.tabs {
+  margin-bottom: 20px;
+}
 desu-box {
   border: 10px dashed #ccc;
   margin: 20px 0 20px 0;

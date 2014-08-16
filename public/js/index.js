@@ -1,7 +1,7 @@
 (function($, _, angular, require) {
   'use strict';
 
-  angular.module('desuSyncApp', []).
+  angular.module('desuSyncApp', ['animeLists']).
 
   // Sharing is caring
   factory('pub', function() {
@@ -16,60 +16,47 @@
     $scope.tabs = ['Credentials', 'Select Episodes'];
     $scope.curTab = $scope.tabs[0];
 
-    $scope.pub.setTab = function(tab) {
-      if ($scope.curTab === 'Credentials' && !$scope.pub.credsValid())
-        return;
-
-      $scope.curTab = tab;
-    };
+    $scope.pub.setTab = function(tab) {$scope.curTab = tab;};
     $scope.pub.getTab = function() {return $scope.curTab;}
     $scope.pub.isTab = function(tab) {return $scope.curTab === tab;};
   }]).
 
   // Login credentials
-  controller('credsCtrl', ['$scope', 'pub',
-  function($scope, pub) {
+  controller('credsCtrl', ['$scope', 'pub', 'hummingbird',
+  function($scope, pub, hummingbird) {
     $scope.pub = pub.obj;
 
     $scope.hb = {
       user: '',
-      pass: ''
-    }
-    $scope.mal = {
-      user: '',
-      pass: ''
+      pass: '',
+      token: '',
+      err: '',
+      ajaxing: false
+    };
+
+    $scope.hbSubmit = function() {
+      $scope.hb.ajaxing = true;
+      hummingbird.auth($scope.hb.user, $scope.hb.pass).
+        success(function(data) {
+          $scope.hb.token = data.slice(1, -1); // Get rid of double quotes
+          $scope.hb.err = '';
+          $scope.hb.ajaxing = false;
+          $scope.pub.setTab('Select Episodes');
+        }).
+        error(function(data) {
+          $scope.hb.token = '';
+          $scope.hb.err = data.error;
+          $scope.hb.ajaxing = false;
+        });
     }
 
-    $scope.pub.getHb = function() {return $scope.hb;};
+    $scope.pub.getHbToken = function() {return $scope.hb.token;};
     $scope.pub.getMal = function() {return $scope.mal;};
-    $scope.pub.credFilled = function(form) {
-      var size = 0;
-      var filled = 0;
-      for (var key in form) {
-        size++;
-        filled += form[key] ? 1 : 0;
-      }
-      return size ? filled === size : false;
-    };
-    $scope.credValid = function(form) {
-      var size = 0;
-      var filled = 0;
-      for (var key in form) {
-        size++;
-        filled += form[key] ? 1 : 0;
-      }
-      return size ? !(0 < filled && filled < size) : false;
-    };
-    $scope.pub.credsValid = function() {
-      // Both valid, at least one filled
-      return ($scope.credValid($scope.hb) && $scope.credValid($scope.mal)) &&
-             ($scope.pub.credFilled($scope.hb) || $scope.pub.credFilled($scope.mal));
-    };
   }]).
 
   // Filenames and stuff
-  controller('entriesCtrl', ['$scope', 'pub',// 'Hummingbird', 'MAL',
-  function($scope, pub) {
+  controller('entriesCtrl', ['$scope', 'pub', 'parser', 'hummingbird',
+  function($scope, pub, parser, hummingbird) {
     $scope.pub = pub.obj;
 
     $scope.entries = [];
@@ -78,16 +65,99 @@
     $scope.manualName = '';
     $scope.manualEp = '';
 
-    $scope.add = function(name, ep, checked) {
-      $scope.entries.push({
-        title: name,
-        ep: ep ? ep : 1,
-        checked: checked
-      });
+    $scope.errors = [];
+    $scope.ajaxing = false;
+
+    /*
+    Callback takes err, data:
+    {
+      id,
+      title,
+      ep,
+      max,
+      img
+    }
+    */
+    function search(title, ep, callback) {
+      $scope.ajaxing = true;
+      hummingbird.search(parser.querify(title)).
+        success(function(data) {
+          console.log(data);
+          if(!(data && data[0])) {
+            callback('Anime not found');
+            return;
+          }
+
+          var entry = data[0];
+          console.log(entry);
+          callback(null, {
+            id: entry.id,
+            title: entry.title,
+            ep: ep,
+            max: entry.episode_count,
+            img: entry.cover_image,
+            checked: true
+          });
+          $scope.ajaxing = false;
+        }).
+        error(function(data) {
+          console.log(data);
+          callback('AJAX error');
+          $scope.ajaxing = false;
+        });
     }
 
-    $scope.remove = function(entry) {
+    function pushEntry(data) {
+      $scope.entries.push(data);
+    }
+
+    function insertEntry(data) {
+      var kicked = false;
+
+      angular.forEach($scope.entries, function(entry) {
+        if (data.id === entry.id || data.title === entry.title) {
+          if (data.ep > entry.ep) // Kick lower entries out
+            removeEntry(entry);
+          else {                  // Other entry beat us
+            kicked = true;
+            return;
+          }
+        }
+      });
+
+      if (!kicked)
+        pushEntry(data);
+    }
+
+    function addEntry(title, ep, valid) {
+      if (valid) {
+        search(title, ep, function(err, data) {
+          if (err) {
+            console.log(err);
+            addErr({title: title, ep: ep, err: err, klass: 'alert-danger'});
+            return;
+          }
+          insertEntry(data);
+        })
+      } else {
+        insertEntry({
+          title: title,
+          ep: ep ? ep : 1,
+          checked: false
+        });
+      }
+    }
+
+    function addErr(err) {
+      $scope.errors.push(err);
+    }
+
+    $scope.removeEntry = function(entry) {
       $scope.entries.splice($scope.entries.indexOf(entry), 1);
+    };
+
+    $scope.removeErr = function(err) {
+      $scope.errors.splice($scope.errors.indexOf(err), 1);
     };
 
     $scope.count = function() {
@@ -101,22 +171,28 @@
 
     $scope.addFiles = function(files) {
       angular.forEach(files, function(file) {
-        $scope.add(file.name, 1, !(file.type && file.type.indexOf('video')));
-      }, $scope.entries);
+        var valid = !(file.type && file.type.indexOf('video'));
+        if (valid) {
+          var parsed = parser.parse(file.name);
+          addEntry(parsed.title, parsed.ep, true);
+        }
+        else
+          addEntry(file.name, 1);
+      });
     };
 
     // Manual text fields
     $scope.manualAdd = function() {
-      $scope.add($scope.manualName, $scope.manualEp, true);
+      addEntry($scope.manualName, $scope.manualEp, true);
       $scope.manualName = '';
       $scope.manualEp = '';
-    }
+    };
 
     // Remove checked or unchecked
-    $scope.removeCheck = function(checked) {
+    $scope.removeChecked = function(checked) {
       angular.forEach($scope.entries.slice(), function(entry) {
         if (entry.checked === checked)
-          $scope.remove(entry);
+          $scope.removeEntry(entry);
       });
     };
 
@@ -127,7 +203,7 @@
     $scope.$watch('selectAll', function(selected) {
       angular.forEach($scope.entries, function(entry) {
         entry.checked = selected;
-      })
+      });
     });
 
   }]).

@@ -3,36 +3,46 @@ extends layout
 block content
   h1= title
 
-  div(ng-controller='tabsCtrl')
+  div.tabs(ng-controller='tabsCtrl')
     ul.nav.nav-pills
-      li(ng-repeat='tab in tabs' ng-class='{active: pub.isTab(tab), disabled: !pub.credsValid()}' ng-click='pub.setTab(tab)')
+      li(ng-repeat='tab in tabs' ng-class='{active: pub.isTab(tab), disabled: !pub.getHbToken()}' ng-click='pub.getHbToken() && pub.setTab(tab)')
         a {{ tab }}
 
 
   div(ng-controller='credsCtrl' ng-show='pub.isTab("Credentials")' ng-cloak)
-    .row
-      .col-xs-11
-        form.form-horizontal(role='form')
-          h3 Hummingbird.me 
-          .form-group.form-group-lg
-            .col-xs-12.col-md-6(ng-class='{"has-error": !(credValid(hb) || hb.user)}')
-              input.form-control(type='text' placeholder='Username' ng-model='hb.user')
-            .col-xs-12.col-md-6(ng-class='{"has-error": !(credValid(hb) || hb.pass)}')
-              input.form-control(type='password' placeholder='Password' ng-model='hb.pass')
-        .text-center: h2 AND/OR
-        form.form-horizontal(role='form')
-          h3 MyAnimeList
-          .form-group.form-group-lg
-            .col-xs-12.col-md-6(ng-class='{"has-error": !(credValid(mal) || mal.user)}')
-              input.form-control(type='text' placeholder='Username' ng-model='mal.user')
-            .col-xs-12.col-md-6(ng-class='{"has-error": !(credValid(mal) || mal.pass)}')
-              input.form-control(type='password' placeholder='Password' ng-model='mal.pass')
-      .col-xs-1
-        a.glyphicon.glyphicon-chevron-right.next(
-        ng-show='pub.credsValid()' ng-click='pub.setTab("Select Episodes")')
+    //- .row
+    //-   .col-xs-12
+    form.form-horizontal(name='hbForm' ng-submit='hbSubmit()' role='form')
+      h3 Hummingbird.me 
+      fieldset.form-group.form-group-lg(ng-disabled='hb.ajaxing')
+        .col-xs-12.col-md-5
+          input.form-control(type='text' placeholder='Username' required autocomplete='on'
+            ng-model='hb.user')
+        .col-xs-12.col-md-5
+          input.form-control(type='password' placeholder='Password' required autocomplete='on'
+            ng-model='hb.pass')
+        .col-xs-12.col-md-2
+          button.btn.btn-lg.btn-primary.btn-block(
+            type='submit') Submit
+    .alert.alert-danger(role='alert' ng-show='hb.err'): strong {{hb.err}}
+        //- .text-center: h2 AND/OR
+        //- form.form-horizontal(name='mal' role='form')
+        //-   h3 MyAnimeList
+        //-   .form-group.form-group-lg
+        //-     .col-xs-12.col-md-6(ng-class='{"has-error": !(credValid(mal) || mal.user)}')
+        //-       input.form-control(type='text' placeholder='Username' ng-model='mal.user')
+        //-     .col-xs-12.col-md-6(ng-class='{"has-error": !(credValid(mal) || mal.pass)}')
+        //-       input.form-control(type='password' placeholder='Password' ng-model='mal.pass')
+      //- .col-xs-1
+      //-   a.glyphicon.glyphicon-chevron-right.next(ng-show='pub.getHbToken()' ng-click='pub.setTab("Select Episodes")')
 
 
   div(ng-controller='entriesCtrl' ng-show='pub.isTab("Select Episodes")' ng-cloak)
+    .alert.alert-dismissible(role='alert' ng-repeat='error in errors' ng-class='error.klass')
+      button.close(type='button' ng-click='removeErr(error)')
+        span(aria-hidden='true') &times;
+        span.sr-only Close
+      strong Error with {{ error.title }} episode {{ error.ep }}: {{ error.err }}.
     .row
       .col-xs-12.col-md-6
         desu-box(on-drop='addFiles(files)') Drag and drop
@@ -56,7 +66,7 @@ block content
         .checkbox
           label
             input(type='checkbox' ng-model='entry.checked')
-            | {{ entry.title }} / {{ entry.ep }}
+            | {{ entry }}
     .controls(ng-show='entries.length')
       .checkbox
         label
@@ -68,8 +78,15 @@ block content
             | Update {{ count() }}/{{ entries.length }} 
             span.caret
           ul.dropdown-menu(role='menu')
-            li(ng-show='pub.credFilled(pub.getHb()) && pub.credFilled(pub.getMal())'): a All
-            li(ng-show='pub.credFilled(pub.getHb())'): a Hummingbird.me
-            li(ng-show='pub.credFilled(pub.getMal())'): a MyAnimeList
-        a.btn.btn-danger(ng-click='removeAll()') Clear all
+            //- li(ng-show='pub.credFilled(pub.getHb()) && pub.credFilled(pub.getMal())'): a All
+            li(ng-show='pub.getHb().$valid'): a Hummingbird.me
+            //- li(ng-show='pub.credFilled(pub.getMal())'): a MyAnimeList
+        .btn-group.btn-group-lg
+          a.btn.btn-danger.dropdown-toggle(data-toggle='dropdown')
+            | Remove 
+            span.caret
+          ul.dropdown-menu(role='menu')
+            li(ng-show='count()' ng-click='removeChecked(true)'): a Selected
+            li(ng-show='count() !== entries.length' ng-click='removeChecked(false)'): a Deselected
+            li(ng-click='removeAll()'): a All
 

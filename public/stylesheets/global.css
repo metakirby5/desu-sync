@@ -1,7 +1,9 @@
 body,
-html,
-.container {
+html {
   height: 100%;
+}
+.container {
+  padding-bottom: 20px;
 }
 .col-xs-1,
 .col-sm-1,

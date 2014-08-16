@@ -1,5 +1,11 @@
 angular.module('animeLists', ['ngResource']).
-  factory('parse', function() {
+  factory('config', function() {
+    return {
+      MASHAPE_KEY: 'PMewiDIGQbmshe5CQs3tcMaGfvUXp1xJuTQjsn6nmEqVUSFsqo'
+    }
+  }).
+
+  factory('parser', function() {
     // Plagiarized from teh w0nd3rful Richard Lin
 
     function cleanFilename(name) {
@@ -74,34 +80,38 @@ angular.module('animeLists', ['ngResource']).
     function parse(name) {
       var full = cleanFilename(name);
       var title = getTitle(full);
-      var number = getEpisodeNumber(full);
-      var query = querify(title);
+      var ep = getEpisodeNumber(full);
       return {
-        full: full,
         title: title,
-        number: number,
-        query: query
+        ep: ep,
       }
     }
 
-    return parse;
+    return {
+      parse: parse,
+      querify: querify
+    };
   }).
 
 
-  factory('hummingbird', ['$resource', '$http',
-  function($resource, $http) {
+  factory('hummingbird', ['$resource', '$http', 'config',
+  function($resource, $http, config) {
     // Inspired by the c00l as h3ck Richard Lin
+    var API = 'https://hummingbirdv1.p.mashape.com';
+
+    // Set headers all around
+    $http.defaults.headers.common['X-Mashape-Key'] = config.MASHAPE_KEY;
 
     // Returns a promise object
     function search(query) {
-      return $http.get('http://hummingbird.me/api/v1/search/anime', {
+      return $http.get(API + '/search/anime', {
         params: {query: query}
       });
     }
 
     // Returns a promise object
     function auth(username, password) {
-      return $http.post('http://hummingbird.me/api/v1/users/authenticate', {
+      return $http.post(API + '/users/authenticate', {
         username: username,
         password: password
       });
@@ -128,7 +138,12 @@ angular.module('animeLists', ['ngResource']).
       if (data.notes) postData.notes = data.notes;
       if (data.eps) postData.episodes_watched = data.eps;
 
-      return $http.post('http://hummingbird.me/api/v1/libraries/' + data.id, postData);
+      return $http.post(API + '/libraries/' + data.id, postData);
     }
 
+    return {
+      search: search,
+      auth: auth,
+      update: update
+    }
   }]);
