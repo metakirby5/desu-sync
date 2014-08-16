@@ -80,7 +80,7 @@
 
     $scope.add = function(name, ep, checked) {
       $scope.entries.push({
-        name: name,
+        title: name,
         ep: ep ? ep : 1,
         checked: checked
       });
