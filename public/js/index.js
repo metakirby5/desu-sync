@@ -16,13 +16,14 @@
     $scope.tabs = ['Credentials', 'Select Episodes'];
     $scope.curTab = $scope.tabs[0];
 
-    $scope.setTab = function(tab) {
+    $scope.pub.setTab = function(tab) {
       if ($scope.curTab === 'Credentials' && !$scope.pub.credsValid())
         return;
 
       $scope.curTab = tab;
     };
     $scope.pub.getTab = function() {return $scope.curTab;}
+    $scope.pub.isTab = function(tab) {return $scope.curTab === tab;};
   }]).
 
   // Filenames and stuff
@@ -115,7 +116,7 @@
       }
       return size ? filled === size : false;
     };
-    $scope.isValid = function(form) {
+    $scope.credValid = function(form) {
       var size = 0;
       var filled = 0;
       for (var key in form) {
@@ -126,7 +127,7 @@
     };
     $scope.pub.credsValid = function() {
       // Both valid, at least one filled
-      return ($scope.isValid($scope.hb) && $scope.isValid($scope.mal)) &&
+      return ($scope.credValid($scope.hb) && $scope.credValid($scope.mal)) &&
              ($scope.pub.credFilled($scope.hb) || $scope.pub.credFilled($scope.mal));
     };
   }]).

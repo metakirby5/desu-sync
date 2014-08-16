@@ -1,3 +1,6 @@
+a {
+  cursor: pointer;
+}
 desu-box {
   border: 10px dashed #ccc;
   margin: 20px 0 20px 0;
@@ -12,6 +15,7 @@ desu-box.hover {
 desu-select {
   font-size: 1.25rem;
 }
-a {
-  cursor: pointer;
+.glyphicon.glyphicon-chevron-right.next {
+  margin-top: 13rem;
+  font-size: 5rem;
 }
