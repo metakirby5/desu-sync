@@ -111,13 +111,23 @@
       $scope.entries.push(data);
     }
 
+    function shouldAdd(title, ep) {
+      angular.forEach($scope.entries, function(entry) {
+        if (data.id === entry.id || data.title === entry.title) {
+          if (data.ep <= entry.ep) // Beat by other entry
+            return false;
+        }
+      });
+      return true;
+    }
+
     function insertEntry(data) {
       var kicked = false;
 
       angular.forEach($scope.entries, function(entry) {
         if (data.id === entry.id || data.title === entry.title) {
           if (data.ep > entry.ep) // Kick lower entries out
-            removeEntry(entry);
+            $scope.removeEntry(entry);
           else {                  // Other entry beat us
             kicked = true;
             return;
@@ -129,8 +139,10 @@
         pushEntry(data);
     }
 
-    function addEntry(title, ep, valid) {
-      if (valid) {
+    function addEntry(title, ep, queriable) {
+      if (!shouldAdd(title, ep))
+        return;
+      if (queriable) {
         search(title, ep, function(err, data) {
           if (err) {
             console.log(err);
@@ -212,8 +224,8 @@
   directive('desuBox', function() {
     return {
       restrict: 'E',
-      transclude: true,
-      template: '<label ng-transclude></label>',
+      // transclude: true,
+      // template: '<label ng-transclude></label>',
       scope: {
         callback: '&onDrop'
       },
