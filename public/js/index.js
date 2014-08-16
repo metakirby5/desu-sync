@@ -26,6 +26,47 @@
     $scope.pub.isTab = function(tab) {return $scope.curTab === tab;};
   }]).
 
+  // Login credentials
+  controller('credsCtrl', ['$scope', 'pub',
+  function($scope, pub) {
+    $scope.pub = pub.obj;
+
+    $scope.hb = {
+      user: '',
+      pass: ''
+    }
+    $scope.mal = {
+      user: '',
+      pass: ''
+    }
+
+    $scope.pub.getHb = function() {return $scope.hb;};
+    $scope.pub.getMal = function() {return $scope.mal;};
+    $scope.pub.credFilled = function(form) {
+      var size = 0;
+      var filled = 0;
+      for (var key in form) {
+        size++;
+        filled += form[key] ? 1 : 0;
+      }
+      return size ? filled === size : false;
+    };
+    $scope.credValid = function(form) {
+      var size = 0;
+      var filled = 0;
+      for (var key in form) {
+        size++;
+        filled += form[key] ? 1 : 0;
+      }
+      return size ? !(0 < filled && filled < size) : false;
+    };
+    $scope.pub.credsValid = function() {
+      // Both valid, at least one filled
+      return ($scope.credValid($scope.hb) && $scope.credValid($scope.mal)) &&
+             ($scope.pub.credFilled($scope.hb) || $scope.pub.credFilled($scope.mal));
+    };
+  }]).
+
   // Filenames and stuff
   controller('entriesCtrl', ['$scope', 'pub',// 'Hummingbird', 'MAL',
   function($scope, pub) {
@@ -89,47 +130,6 @@
       })
     });
 
-  }]).
-
-  // Login credentials
-  controller('credsCtrl', ['$scope', 'pub',
-  function($scope, pub) {
-    $scope.pub = pub.obj;
-
-    $scope.hb = {
-      user: '',
-      pass: ''
-    }
-    $scope.mal = {
-      user: '',
-      pass: ''
-    }
-
-    $scope.pub.getHb = function() {return $scope.hb;};
-    $scope.pub.getMal = function() {return $scope.mal;};
-    $scope.pub.credFilled = function(form) {
-      var size = 0;
-      var filled = 0;
-      for (var key in form) {
-        size++;
-        filled += form[key] ? 1 : 0;
-      }
-      return size ? filled === size : false;
-    };
-    $scope.credValid = function(form) {
-      var size = 0;
-      var filled = 0;
-      for (var key in form) {
-        size++;
-        filled += form[key] ? 1 : 0;
-      }
-      return size ? !(0 < filled && filled < size) : false;
-    };
-    $scope.pub.credsValid = function() {
-      // Both valid, at least one filled
-      return ($scope.credValid($scope.hb) && $scope.credValid($scope.mal)) &&
-             ($scope.pub.credFilled($scope.hb) || $scope.pub.credFilled($scope.mal));
-    };
   }]).
 
   // Drag and drop box

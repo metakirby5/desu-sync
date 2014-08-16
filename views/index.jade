@@ -5,7 +5,7 @@ block content
 
   div(ng-controller='tabsCtrl')
     ul.nav.nav-pills
-      li(ng-repeat='tab in tabs' ng-class='{active: pub.isTab(tab) }' ng-click='pub.setTab(tab)')
+      li(ng-repeat='tab in tabs' ng-class='{active: pub.isTab(tab), disabled: !pub.credsValid()}' ng-click='pub.setTab(tab)')
         a {{ tab }}
 
 
