@@ -1,4 +1,4 @@
-angular.module('animelists', ['ngResource']).
+angular.module('animeLists', ['ngResource']).
   factory('parse', function() {
     // Plagiarized from teh w0nd3rful Richard Lin
 

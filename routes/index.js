@@ -6,7 +6,7 @@ router.get('/', function(req, res) {
   res.render('index', {
     title: 'DesuSync',
     css: ['index'],
-    js: [/*'ani-up', 'services',*/ 'index'],
+    js: ['services', 'index'],
     ngApp: ['desuSyncApp']
   });
 });
