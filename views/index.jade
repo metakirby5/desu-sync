@@ -55,7 +55,7 @@ block content
           form(role='form' ng-submit='manualAdd()')
             .row
               .col-xs-12.col-md-7
-                input.form-control(type='text' required placeholder='Anime name' ng-model='manualName')
+                input.form-control(type='text' required placeholder='Anime name' ng-model='manualTitle')
               .col-xs-6.col-md-3
                 input.form-control(type='number' min='0' placeholder='Episode' ng-model='manualEp')
               .col-xs-6.col-md-2
@@ -75,7 +75,7 @@ block content
       .btn-group.btn-group-justified.btn-group-lg
         .btn-group.btn-group-lg
           a.btn.btn-primary.dropdown-toggle(data-toggle='dropdown')
-            | Update {{ count() }}/{{ entries.length }} 
+            | Update {{ countChecked() }}/{{ entries.length }} 
             span.caret
           ul.dropdown-menu(role='menu')
             //- li(ng-show='pub.credFilled(pub.getHb()) && pub.credFilled(pub.getMal())'): a All
@@ -86,7 +86,7 @@ block content
             | Remove 
             span.caret
           ul.dropdown-menu(role='menu')
-            li(ng-show='count()' ng-click='removeChecked(true)'): a Selected
-            li(ng-show='count() !== entries.length' ng-click='removeChecked(false)'): a Deselected
+            li(ng-show='countChecked()' ng-click='removeChecked(true)'): a Selected
+            li(ng-show='countChecked() !== entries.length' ng-click='removeChecked(false)'): a Deselected
             li(ng-click='removeAll()'): a All
 
