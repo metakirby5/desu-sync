@@ -10,31 +10,16 @@ block content
 
 
   div(ng-controller='credsCtrl' ng-show='pub.isTab("Credentials")' ng-cloak)
-    //- .row
-    //-   .col-xs-12
     form.form-horizontal(name='hbForm' ng-submit='hbSubmit()' role='form')
       h3 Hummingbird.me 
       fieldset.form-group.form-group-lg(ng-disabled='hb.ajaxing')
         .col-xs-12.col-md-5
-          input.form-control(type='text' placeholder='Username' required
-            ng-model='hb.user')
+          input.form-control(type='text' placeholder='Username' required ng-model='hb.user')
         .col-xs-12.col-md-5
-          input.form-control(type='password' placeholder='Password' required
-            ng-model='hb.pass')
+          input.form-control(type='password' placeholder='Password' required ng-model='hb.pass')
         .col-xs-12.col-md-2
-          button.btn.btn-lg.btn-primary.btn-block(
-            type='submit') Submit
+          button.btn.btn-lg.btn-primary.btn-block(type='submit') Submit
     .alert.alert-danger(role='alert' ng-show='hb.err'): strong {{hb.err}}
-        //- .text-center: h2 AND/OR
-        //- form.form-horizontal(name='mal' role='form')
-        //-   h3 MyAnimeList
-        //-   .form-group.form-group-lg
-        //-     .col-xs-12.col-md-6(ng-class='{"has-error": !(credValid(mal) || mal.user)}')
-        //-       input.form-control(type='text' placeholder='Username' ng-model='mal.user')
-        //-     .col-xs-12.col-md-6(ng-class='{"has-error": !(credValid(mal) || mal.pass)}')
-        //-       input.form-control(type='password' placeholder='Password' ng-model='mal.pass')
-      //- .col-xs-1
-      //-   a.glyphicon.glyphicon-chevron-right.next(ng-show='pub.getHbToken()' ng-click='pub.setTab("Select Episodes")')
 
 
   div(ng-controller='entriesCtrl' ng-show='pub.isTab("Select Episodes")' ng-cloak)
@@ -61,12 +46,22 @@ block content
               .col-xs-6.col-md-2
                 button.btn.btn-primary.btn-block(type='submit') Add
 
-    ul.list-unstyled
-      li(ng-repeat='entry in entries')
-        .checkbox
-          label
-            input(type='checkbox' ng-model='entry.checked')
-            | {{ entry }}
+    table.table.table-hover(ng-show='entries.length')
+      thead
+        tr
+          th Update?
+          th ID
+          th Title
+          th Episode
+          th Image
+      tbody
+        tr(ng-repeat ='entry in entries')
+          td: input(type='checkbox' ng-model='entry.checked')
+          td {{entry.id}}
+          td {{entry.title}}
+          td {{entry.ep}}/{{entry.max}}
+          td: img(ng-src='{{entry.img}}' alt='{{entry.title}}')
+
     .controls(ng-show='entries.length')
       .checkbox
         label
@@ -76,7 +71,7 @@ block content
         .btn-group.btn-group-lg
           a.btn.btn-primary(ng-click='update()')
             | Update {{ countChecked() }}/{{ entries.length }}
-        .btn-group.btn-group-lg
+        .btn-group.btn-group-lg.dropup
           a.btn.btn-danger.dropdown-toggle(data-toggle='dropdown')
             | Remove 
             span.caret

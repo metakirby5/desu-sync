@@ -54,6 +54,7 @@
   }]).
 
   // Filenames and stuff
+  // this code is rly spaghetti pls don't hate me for it
   controller('entriesCtrl', ['$scope', '$timeout', 'pub', 'parser', 'hummingbird',
   function($scope, $timeout, pub, parser, hummingbird) {
     $scope.pub = pub.obj;
@@ -177,6 +178,7 @@
               id: entry.id,
               title: entry.title,
               ep: ep,
+              max: entry.episode_count,
               img: entry.cover_image,
               checked: true
             });
