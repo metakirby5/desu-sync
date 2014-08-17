@@ -122,6 +122,7 @@ angular.module('animeLists', ['ngResource']).
 
     Takes this object for data:
     {
+      id:       int, 
       status:   currently-watching, plan-to-watch, completed, on-hold,
       privacy:  public, private,
       rating:   0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5,
@@ -132,6 +133,7 @@ angular.module('animeLists', ['ngResource']).
     function update(token, data) {
       var postData = {};
 
+      postData.auth_token = token;
       postData.status = data.status ? 'currently-watching' : data.status;
       if (data.privacy) postData.privacy = data.privacy;
       if (data.rating) postData.sane_rating_update = data.rating;

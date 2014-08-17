@@ -51,7 +51,6 @@
     }
 
     $scope.pub.getHbToken = function() {return $scope.hb.token;};
-    $scope.pub.getMal = function() {return $scope.mal;};
   }]).
 
   // Filenames and stuff
@@ -143,9 +142,8 @@
         if (title === entry.title) {
           if (ep <= entry.ep)
             retval = false;
-          else { // Clean up smaller entries
+          else // Clean up smaller entries
             queue.splice(entry, 1);
-          }
         }
       });
       return retval;
@@ -202,6 +200,7 @@
           addErr(data, err, 'alert-danger');
           return false;
         }
+        recordAdded(title, ep);
         pushEntry(data);
         return true;
       });
@@ -210,10 +209,10 @@
     // Manual text fields - no queuing needed
     $scope.manualAdd = function() {
       (function(title, ep) {
-        if (shouldAdd(title, ep)) {
-          recordAdded(title, ep);
+        if (shouldAdd(title, ep))
           searchAndPush(title, ep);
-        }
+        else
+          addErr({title: title, ep: ep}, 'Already added episode ' + entry.ep, 'alert-info');
       })($scope.manualTitle, $scope.manualEp);
 
       $scope.manualTitle = '';
@@ -237,13 +236,31 @@
         var ep = parsed.ep;
 
         if (shouldAdd(title, ep)) {
-          recordAdded(title, ep);
           enqueue(title, ep);
         }
       });
 
       processQueued();
     };
+
+    $scope.update = function() {
+      $scope.ajaxing = true;
+      angular.forEach($scope.entries, function(entry) {
+        if (entry.checked) {
+          hummingbird.update($scope.pub.getHbToken(), {id: entry.id, eps: entry.ep}).
+            success(function(data) {
+              console.log(data);
+              addErr({title: entry.title, ep: entry.ep}, 'Added successfully', 'alert-success');
+              $scope.removeEntry(entry);
+              $scope.ajaxing = false;
+            }).
+            error(function(data) {
+              addErr({title: entry.title, ep: entry.ep}, data.error, 'alert-danger');
+              $scope.ajaxing = false;
+            });
+        }
+      });
+    }
 
     $scope.$watch('selectAll', function(selected) {
       angular.forEach($scope.entries, function(entry) {

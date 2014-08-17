@@ -42,15 +42,15 @@ block content
       button.close(type='button' ng-click='removeErr(error)')
         span(aria-hidden='true') &times;
         span.sr-only Close
-      strong Error with {{ error.title }} episode {{ error.ep }}: {{ error.err }}.
+      strong {{ error.title }} episode {{ error.ep }}: {{ error.err }}.
     .row
       .col-xs-12.col-md-6
         desu-box(on-drop='addFiles(files)') Drag and drop
       .col-xs-12.col-md-6
-        .form-group
+        fieldset.form-group(ng-disabled='ajaxing')
           label Classic upload
           desu-select(on-select='addFiles(files)')
-        .form-group
+        fieldset.form-group(ng-disabled='ajaxing')
           label Manual entry
           form(role='form' ng-submit='manualAdd()')
             .row
@@ -72,15 +72,10 @@ block content
         label
           input(type='checkbox' ng-model='selectAll')
           | Select All
-      .btn-group.btn-group-justified.btn-group-lg
+      fieldset.btn-group.btn-group-justified.btn-group-lg(ng-disabled='ajaxing')
         .btn-group.btn-group-lg
-          a.btn.btn-primary.dropdown-toggle(data-toggle='dropdown')
-            | Update {{ countChecked() }}/{{ entries.length }} 
-            span.caret
-          ul.dropdown-menu(role='menu')
-            //- li(ng-show='pub.credFilled(pub.getHb()) && pub.credFilled(pub.getMal())'): a All
-            li(ng-show='pub.getHb().$valid'): a Hummingbird.me
-            //- li(ng-show='pub.credFilled(pub.getMal())'): a MyAnimeList
+          a.btn.btn-primary(ng-click='update()')
+            | Update {{ countChecked() }}/{{ entries.length }}
         .btn-group.btn-group-lg
           a.btn.btn-danger.dropdown-toggle(data-toggle='dropdown')
             | Remove 
