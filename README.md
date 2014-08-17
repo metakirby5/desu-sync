@@ -7,7 +7,7 @@ File input -> update anime lists
 
 ```bash
 npm install
-node bin/www
+npm start
 ```
 
 Then, visit localhost:3000
