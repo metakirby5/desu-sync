@@ -1,4 +1,4 @@
-(function($, _, angular, require) {
+(function($, _, angular) {
   'use strict';
 
   angular.module('desuSyncApp', ['animeLists']).
@@ -17,7 +17,7 @@
     $scope.curTab = $scope.tabs[0];
 
     $scope.pub.setTab = function(tab) {$scope.curTab = tab;};
-    $scope.pub.getTab = function() {return $scope.curTab;}
+    $scope.pub.getTab = function() {return $scope.curTab;};
     $scope.pub.isTab = function(tab) {return $scope.curTab === tab;};
   }]).
 
@@ -48,7 +48,7 @@
           $scope.hb.err = data.error;
           $scope.hb.ajaxing = false;
         });
-    }
+    };
 
     $scope.pub.getHbToken = function() {return $scope.hb.token;};
   }]).
@@ -107,7 +107,7 @@
           count++;
       });
       return count;
-    }
+    };
 
     // Remove checked or unchecked
     $scope.removeChecked = function(checked) {
@@ -229,7 +229,7 @@
       // Queue so we don't make n queries
       angular.forEach(files, function(file) {
         if (!fileValid(file)) {
-          addErr({title: file.name, ep: 'n/a'}, 'File type not valid', 'alert-warning')
+          addErr({title: file.name, ep: 'n/a'}, 'File type not valid', 'alert-warning');
           return;
         }
 
@@ -262,7 +262,7 @@
             });
         }
       });
-    }
+    };
 
     $scope.$watch('selectAll', function(selected) {
       angular.forEach($scope.entries, function(entry) {
@@ -308,11 +308,11 @@
         elem.on('change', function(e) {
           e.stopPropagation();
           e.preventDefault();
-          scope.callback({files: e.target.files})
+          scope.callback({files: e.target.files});
           scope.$apply();
-        })
+        });
       }
-    }
+    };
   });
 
   $(function() {
@@ -321,4 +321,4 @@
       $('desu-box').remove();
   });
 
-})(window.jQuery, window._, window.angular, window.require);
+})(window.jQuery, window._, window.angular);
