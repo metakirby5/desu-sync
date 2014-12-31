@@ -1,8 +1,8 @@
 angular.module('animeLists', ['ngResource']).
   factory('config', function() {
     return {
-      MASHAPE_KEY: 'PMewiDIGQbmshe5CQs3tcMaGfvUXp1xJuTQjsn6nmEqVUSFsqo'
-    }
+      MASHAPE_KEY: '' // YOUR KEY HERE
+    };
   }).
 
   factory('parser', function() {
@@ -13,7 +13,7 @@ angular.module('animeLists', ['ngResource']).
 
       // get rid of things in [] and (), as well as file extensions
       var result = name.replace(/(((\[|\()(.*?)(\]|\)))|(\.(\w+))$)/g, '');
-      
+
       // replace underscores, dots with single space
       result = result.replace(/(_|\.)/g, ' ');
 
@@ -43,14 +43,14 @@ angular.module('animeLists', ['ngResource']).
 
       // shortens whitespace to one space
       result = result.replace(/[\s]+/g, ' ');
-      
+
       return result.trim();
     }
 
     function getEpisodeNumber(name) {
       // get rid of everything except for last number
       var result = name.match(/[0-9]+$/g);
-      
+
       // no number? probably a movie/OVA...
       if(!result) {
         result = 1;
@@ -72,7 +72,7 @@ angular.module('animeLists', ['ngResource']).
     function querify(name) {
       // removes dashes
       var result = name.replace(/-/g, '');
-      
+
       // replace spaces with pluses
       return result.replace(/[\s]+/g, '+');
     }
@@ -122,7 +122,7 @@ angular.module('animeLists', ['ngResource']).
 
     Takes this object for data:
     {
-      id:       int, 
+      id:       int,
       status:   currently-watching, plan-to-watch, completed, on-hold,
       privacy:  public, private,
       rating:   0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5,
