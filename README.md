@@ -11,3 +11,5 @@ npm start
 ```
 
 Then, visit localhost:3000
+
+NOTE: you must provide a Mashape key at public/js/services.js
