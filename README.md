@@ -3,7 +3,7 @@ desu-sync
 
 File input -> update anime lists
 
-#How to run
+## How to run
 
 ```bash
 npm install
